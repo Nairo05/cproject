@@ -1,9 +1,9 @@
 #pragma once
 class Brett {
-	int playerid;
 public:
 	Brett(int pid);
 	void printBrett();
+	int field[10][10]; //0: Wasser //1: Schiff //2: Treffer //3: Versenkt
 private:
-	int field[10][10];
+	int playerid;
 };

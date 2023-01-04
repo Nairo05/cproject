@@ -1,5 +1,6 @@
 #include "Brett.h"
 #include <iostream>
+
 Brett::Brett(int pid) {
 	playerid = pid;
 
