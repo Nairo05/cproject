@@ -12,8 +12,15 @@ Brett::Brett(int pid) {
 }
 
 void Brett::printBrett() {
-	std::cout << "Feld von Spieler " << playerid << std::endl;
+	std::cout << "Feld von Spieler " << playerid << ":" << std::endl;
+	std::cout << " ";
 	for (int i = 0; i < 10; i++) {
+		std::cout << " " << i;
+	}
+	std::cout << std::endl;
+	char zeilenBez = 'A';
+	for (int i = 0; i < 10; i++) {
+		std::cout << (char)(zeilenBez + i) << " ";
 		for (int j = 0; j < 10; j++) {
 			std::cout << field[i][j];
 			std::cout << " ";

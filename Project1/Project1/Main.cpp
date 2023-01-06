@@ -19,11 +19,14 @@ Brett *spielerBrett;
 Brett *kiBrett;
 
 int main() {
-	spielerBrett = new Brett{1}; //Mensch
-	spielerBrett -> printBrett();
-
-	kiBrett = new Brett{2}; //KI
+	spielerBrett = new Brett{1};
+	kiBrett = new Brett{2};
+	
+	std::cout << std::endl << "[ SCHIFFE VERSENKEN ]" << std::endl;
+	std::cout << "Kannst du es schaffen, alle Schiffe der KI zu versenken, bevor sie dich besiegt?" << std::endl;
+	std::cout << "Das Spiel folgt den bekannten Regeln und bezieht sich auf folgendes Feld: " << std::endl << std::endl;
 	kiBrett -> printBrett();
+	std::cout << std::endl << "Viel Erfolg!" << std::endl << std::endl;
 	
 	schiffeSetzen();
 
@@ -67,21 +70,21 @@ int kiSchiffeSetzen(int shipSize) {
 		int orientation = generateRandom(2);
 
 		if(orientation == 0) {
-			if ((x + shipSize) > 9) {
+			if ((x + shipSize) > 10) {
 				endX = x;
-				startX = x-shipSize;
+				startX = x-shipSize+1;
 			} else {
-				endX = x+shipSize;
+				endX = x+shipSize-1;
 				startX = x;
 			}
 			startY = y;
 			endY = y;
 		} else if (orientation == 1) {
-			if ((y + shipSize) > 9) {
+			if ((y + shipSize) > 10) {
 				endY = y;
-				startY = y-shipSize;
+				startY = y-shipSize+1;
 			} else {
-				endY = y+shipSize;
+				endY = y+shipSize-1;
 				startY = y;
 			}
 			startX = x;
@@ -91,13 +94,13 @@ int kiSchiffeSetzen(int shipSize) {
 		//Prüfen auf Überschneidung:
 		ueberschneidung = false;
 		if (orientation == 0) {
-			for (int i = startX; i < endX; i++) {
+			for (int i = startX; i <= endX; i++) {
 				if(kiBrett -> field[startY][i] > 0) {
 					ueberschneidung = true;
 				}
 			}
 		} else if (orientation == 1) {
-			for (int i = startY; i < endY; i++) {
+			for (int i = startY; i <= endY; i++) {
 				if(kiBrett -> field[i][startX] > 0) {
 					ueberschneidung = true;
 				}
@@ -124,33 +127,18 @@ int spielerSchiffeSetzen(int shipSize) {
 	bool unzulaessig;
 	do {
 		unzulaessig = false;
-		std::cout << "---[Setze ein Schiff der Laenge " << shipSize << "]---" << std::endl;
-		std::cout << "Lege die Orientierung fest: Horizontal (h) oder Vertikal (v)" << std::endl;
+		std::cout << std::endl << "---[Setze ein Schiff der Laenge " << shipSize << "]---" << std::endl;
+		std::cout << "[ Lege die Orientierung fest: Horizontal (h) oder Vertikal (v) ]" << std::endl;
 		std::cin >> o;
-		std::cout << "Gib nun die Position des Schiffsteils an, der am weitesten links unten sein soll (z.B. B4)" << std::endl;
+		std::cout << "[ Gib nun die Position des Schiffsteils an, der am weitesten links unten sein soll (z.B. B4) ]" << std::endl;
 		std::string p;
 		std::cin >> p;
 
 		//Extrahieren der Eingabekoordinaten in zwei ints.
 		if (p.length() == 2) {
 			try {
-				//TODO: Split input string into 2 ints...
-				/*
-				char arr[p.length()];
-				for (int i = 0; i < sizeof(arr); i++) {
-					arr[i] = p[i];
-				} 
-				zeile = arr[0] - 48;
-				spalte = arr[1] - 48;
-				std::cout << zeile << std::endl;
-				std::cout << spalte << std::endl;
-				*/
-
-				zeile = p[0] - 48;
+				zeile = p[0] - 65;
 				spalte = p[1] - 48;
-				std::cout << zeile << std::endl;
-				std::cout << spalte << std::endl;
-
 			} catch (...) {
 				unzulaessig = true;
 			}
@@ -159,13 +147,13 @@ int spielerSchiffeSetzen(int shipSize) {
 		}
 		if (!unzulaessig) {
 			if (o == 'h') {
-				if (zeile > 9 || zeile < 0 || spalte > 9 || spalte < 0 || (spalte+shipSize) > 9) {
+				if (zeile > 9 || zeile < 0 || spalte > 9 || spalte < 0 || (spalte+shipSize) > 10) {
 					unzulaessig = true;
 				} else {
 
 				}
 			} else if (o == 'v') {
-				if (zeile > 9 || zeile < 0 || spalte > 9 || spalte < 0 || (zeile-shipSize) < 0) {
+				if (zeile > 9 || zeile < 0 || spalte > 9 || spalte < 0 || (zeile-shipSize) < -1) {
 					unzulaessig = true;
 				}
 			} else {
@@ -181,7 +169,7 @@ int spielerSchiffeSetzen(int shipSize) {
 				}
 			}
 		} else if (o == 'v') {
-			for (int i = zeile; i < zeile-shipSize; i--) {
+			for (int i = zeile; i > zeile-shipSize; i--) {
 				if(spielerBrett -> field[i][spalte] > 0) {
 					unzulaessig = true;
 				}
@@ -190,10 +178,11 @@ int spielerSchiffeSetzen(int shipSize) {
 		}
 
 		if (unzulaessig) {
-			std::cout << "Diese Position ist nicht zulaessig. Beachte bitte folgende Kriterien:" << std::endl;
+			std::cout << std::endl;
+			std::cout << "[ Diese Position ist nicht zulaessig. Beachte bitte folgende Kriterien: ]" << std::endl;
 			std::cout << "- Das Schiff darf nicht ueber das Feld hinausragen" << std::endl;
 			std::cout << "- Das Schiff darf sich nicht mit anderen Schiffen kreuzen" << std::endl;
-			std::cout << "- Beachte das Eingabeformat [Zeile][Spalte], z.B. B4" << std::endl;
+			std::cout << "- Beachte das Eingabeformat [Zeile][Spalte], z.B. B4" << std::endl << std::endl;
 		}
 
 	} while (unzulaessig);
@@ -202,12 +191,12 @@ int spielerSchiffeSetzen(int shipSize) {
 	int orientation;
 	if (o == 'h') {
 		orientation = 0;
-		registerToField(spalte, spalte+shipSize, zeile, zeile, orientation, spielerBrett);
-		schiff -> setPosition(spalte, spalte+shipSize, zeile, zeile);
+		registerToField(spalte, spalte+shipSize-1, zeile, zeile, orientation, spielerBrett);
+		schiff -> setPosition(spalte, spalte+shipSize-1, zeile, zeile);
 	} else {
 		orientation = 1;
-		registerToField(spalte, spalte, zeile-shipSize, zeile, orientation, spielerBrett);
-		schiff -> setPosition(spalte, spalte, zeile-shipSize, zeile);
+		registerToField(spalte, spalte, zeile-shipSize+1, zeile, orientation, spielerBrett);
+		schiff -> setPosition(spalte, spalte, zeile-shipSize+1, zeile);
 	}
 	spielerSchiffe.push_back(schiff);
 	
@@ -221,11 +210,11 @@ int generateRandom(int max) {
 
 int registerToField(int startX, int endX, int startY, int endY, int orientation, Brett* brett) {
 	if (orientation == 0) {
-		for (int i = startX; i < endX; i++) {
+		for (int i = startX; i <= endX; i++) {
 			brett -> field[startY][i] = 1; 
 		}
 	} else if (orientation == 1) {
-		for (int i = startY; i < endY; i++) {
+		for (int i = startY; i <= endY; i++) {
 			brett -> field[i][startX] = 1; 
 		}
 	}
