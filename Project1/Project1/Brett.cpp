@@ -12,7 +12,7 @@ Brett::Brett(int pid) {
 }
 
 void Brett::printBrett() {
-	std::cout << "Feld von Spieler " << playerid << ":" << std::endl;
+	std::cout << std::endl << "Feld von Spieler " << playerid << ":" << std::endl;
 	std::cout << " ";
 	for (int i = 0; i < 10; i++) {
 		std::cout << " " << i;
@@ -27,5 +27,5 @@ void Brett::printBrett() {
 		}
 		std::cout << std::endl;
 	}
-
+	std::cout << std::endl;
 }

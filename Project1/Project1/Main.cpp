@@ -13,6 +13,8 @@ int kiSchiffeSetzen(int size);
 int spielerSchiffeSetzen(int size);
 int generateRandom(int max);
 int registerToField(int sX, int eX, int sY, int eY, int o, Brett* brett);
+int spielStarten();
+int spielZug(int naechster);
 /**/
 
 Brett *spielerBrett;
@@ -32,8 +34,14 @@ int main() {
 
 	spielerBrett -> printBrett();
 	kiBrett -> printBrett();
-	
 
+	int gewinner = spielStarten();
+
+	std::cout << "---[ SPIEL BEENDET ]---" << std::endl;
+	std::cout << "Der Gewinner ist: Spieler " << gewinner << std::endl;
+	
+	delete spielerBrett;
+	delete kiBrett;
 	return 0;
 }
 
@@ -112,7 +120,7 @@ int kiSchiffeSetzen(int shipSize) {
 		}
 	} while (ueberschneidung);
 	 
-	Schiff *schiff = new Schiff(shipSize);
+	Schiff *schiff = new Schiff(shipSize); //TODO: delete
 	schiff -> setPosition(startX, endX, startY, endY);
 	kiSchiffe.push_back(schiff);
 
@@ -187,7 +195,7 @@ int spielerSchiffeSetzen(int shipSize) {
 
 	} while (unzulaessig);
 	
-	Schiff *schiff = new Schiff(shipSize);
+	Schiff *schiff = new Schiff(shipSize); //TODO: delete
 	int orientation;
 	if (o == 'h') {
 		orientation = 0;
@@ -219,4 +227,104 @@ int registerToField(int startX, int endX, int startY, int endY, int orientation,
 		}
 	}
 	return 0;
+}
+
+int spielStarten() {
+	int spielzugCounter = 0;
+	bool spielEnde = false;
+	int vorheriger;
+	int naechster = spielZug(1); //Spieler darf zuerst ziehen.
+	while (!spielEnde) {
+		vorheriger = naechster;
+		std::cout << "Vorheriger: "<< vorheriger << std::endl;
+		naechster = spielZug(naechster);
+		spielzugCounter++;
+		//TODO: Prüfen auf Spielende, und zwar so: Wenn das Feld des Spielers der jetzt als nächstes dran ist keine 1 mehr enthält, hat der andere Spieler gewonnen!
+		spielEnde = true;
+		if (vorheriger == 1) {
+			for(int i = 0; i < 10; i++) {
+				for (int j = 0; j < 10; j++) {
+					if (kiBrett -> field[i][j] == 1) {
+						spielEnde = false;
+						break;
+					}
+				}
+			}
+		} else {
+			for(int i = 0; i < 10; i++) {
+				for (int j = 0; j < 10; j++) {
+					if (spielerBrett -> field[i][j] == 1) {
+						spielEnde = false;
+						break;
+					}
+				}
+			}
+		}
+	}
+	
+	return vorheriger;
+}
+
+int spielZug(int n) {
+	int naechster;
+	int zeile;
+	int spalte;
+	bool unzulaessig = false;
+
+	if (n == 1) { //Spieler
+		std::cout << "---[ Du bist an der Reihe - Nenne eine Koordinate zum Beschuss ]---" << std::endl;
+		
+		std::string p;
+		std::cin >> p;
+
+		//Extrahieren der Eingabekoordinaten in zwei ints.
+		if (p.length() == 2) {
+			try {
+				zeile = p[0] - 65;
+				spalte = p[1] - 48;
+			} catch (...) {
+				unzulaessig = true;
+			}
+		} else {
+			unzulaessig = true;
+		}
+		if (!unzulaessig) {
+			if (zeile > 9 || zeile < 0 || spalte > 9 || spalte < 0) {
+					unzulaessig = true;
+			} 
+		}
+		if (unzulaessig) {
+			std::cout << "---[ Eingabe falsch, versuche es nochmal ]---" << std::endl;
+			naechster = 1; //Spieler ist nochmal dran.
+		} else {
+			//Prüfen, ob ein Schiff auf dem kiBrett getroffen bzw. versenkt wurde:
+			switch (kiBrett -> field[zeile][spalte]) {
+				case 0:
+					std::cout << "Daneben!" << std::endl;
+					kiBrett -> field[zeile][spalte] = 4;
+					naechster = 2; //KI ist dran
+					break;
+				case 1:
+					std::cout << "Treffer!" << std::endl;
+					kiBrett -> field[zeile][spalte] = 2;
+					naechster = 1; //Spieler ist nochmal dran
+					//TODO: Prüfen auf "Versenkt"
+					break;
+				default:
+					std::cout << "Du hast bereits auf dieses Feld geschossen!" << std::endl;
+					naechster = 1; //Spieler ist nochmal dran weil es gemein ist, Dummheit zu bestrafen :/
+					break;
+			} 
+		}
+	} else if (n == 2) { //KI
+		std::cout << "---[ Die KI ist dran - Warum zitterst du so? ]---" << std::endl;
+		
+		std::cout << "A1 wird beschossen." << std::endl;
+		std::cout << "Daneben!" << std::endl;
+		naechster = 1; 
+	}
+
+	spielerBrett -> printBrett();
+	kiBrett -> printBrett();
+	return naechster;
 }
