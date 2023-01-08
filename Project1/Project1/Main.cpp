@@ -4,9 +4,6 @@
 #include "Brett.h"
 #include "Schiff.h"
 
-std::vector<Schiff *> spielerSchiffe;
-std::vector<Schiff *> kiSchiffe;
-
 /**/
 int schiffeSetzen();
 int kiSchiffeSetzen(int size);
@@ -16,6 +13,14 @@ int registerToField(int sX, int eX, int sY, int eY, int o, Brett* brett);
 int spielStarten();
 int spielZug(int naechster);
 /**/
+
+enum kiStrategien {zufall, nord, ost, sued, west}; 
+kiStrategien strategie = zufall;
+int kiTarget_x;
+int kiTarget_y;
+
+std::vector<Schiff *> spielerSchiffe;
+std::vector<Schiff *> kiSchiffe;
 
 Brett *spielerBrett;
 Brett *kiBrett;
@@ -231,7 +236,7 @@ int registerToField(int startX, int endX, int startY, int endY, int orientation,
 
 int spielStarten() {
 	int spielzugCounter = 0;
-	bool spielEnde = false;
+	bool spielEnde = false;	
 	int vorheriger;
 	int naechster = spielZug(1); //Spieler darf zuerst ziehen.
 	while (!spielEnde) {
@@ -239,7 +244,7 @@ int spielStarten() {
 		std::cout << "Vorheriger: "<< vorheriger << std::endl;
 		naechster = spielZug(naechster);
 		spielzugCounter++;
-		//TODO: Prüfen auf Spielende, und zwar so: Wenn das Feld des Spielers der jetzt als nächstes dran ist keine 1 mehr enthält, hat der andere Spieler gewonnen!
+		//Prüfen auf Spielende, und zwar so: Wenn das Feld des Spielers der jetzt als nächstes dran ist keine 1 mehr enthält, hat der andere Spieler gewonnen!
 		spielEnde = true;
 		if (vorheriger == 1) {
 			for(int i = 0; i < 10; i++) {
@@ -318,10 +323,126 @@ int spielZug(int n) {
 		}
 	} else if (n == 2) { //KI
 		std::cout << "---[ Die KI ist dran - Warum zitterst du so? ]---" << std::endl;
+		int zeile;
+		int spalte;
+		switch (strategie) {
+		case nord: 
+			zeile = kiTarget_y - 1;
+			spalte = kiTarget_x;
+			break;
+		case ost:
+			zeile = kiTarget_y;
+			spalte = kiTarget_x - 1;
+			break;
+		case sued:
+			zeile = kiTarget_y + 1;
+			spalte = kiTarget_x;
+			break;
+		case west:
+			zeile = kiTarget_y;
+			spalte = kiTarget_x + 1;
+			break;
+		case zufall:
+		default:
+			zeile = generateRandom(10);
+			spalte = generateRandom(10);
+			break;
+		}
 		
-		std::cout << "A1 wird beschossen." << std::endl;
-		std::cout << "Daneben!" << std::endl;
-		naechster = 1; 
+		std::cout << zeile << spalte << std::endl;
+
+		switch (spielerBrett -> field[zeile][spalte]) {
+			case 0:
+				std::cout << "KI hat daneben geschossen!" << std::endl;
+				spielerBrett -> field[zeile][spalte] = 4;
+				naechster = 1; //Spieler ist dran
+				switch (strategie) {				//TODO: Deadlock fixen: Wenn z.B. vertikales Schiff getroffen, kann ein unendlicher Wechsel zw. west-ost strategie folgen...
+					case nord: 
+						strategie = sued; 
+						break;
+					case ost:
+						strategie = west;
+						break;
+					case sued:
+						strategie = nord;
+						break;
+					case west:
+						strategie = ost;
+						break;
+					case zufall:
+					default:
+						break;
+					}
+				break;
+			case 1:
+				std::cout << "KI hat dein Schiff getroffen!" << std::endl;
+				kiTarget_x = spalte;
+				kiTarget_y = zeile;
+				spielerBrett -> field[zeile][spalte] = 2;
+				naechster = 2; //KI ist nochmal dran
+				//TODO: Prüfen auf "Versenkt"
+				//if versenkt=true => strategie=zufall, else:
+				switch (strategie) {
+					case nord: 
+						if(zeile == 0) {
+							strategie = sued;
+						} 
+						break;
+					case ost:
+						if(spalte == 0) {
+							strategie = west;
+						} 
+						break;
+					case sued:
+						if(zeile == 9) {
+							strategie = nord;
+						} 
+						break;
+					case west:
+						if(spalte == 9) {
+							strategie = ost;
+						} 
+						break;
+					case zufall:
+						if (spalte == 9) {
+							strategie = ost;
+						} else if (spalte == 0) {
+							strategie = west;
+						} else if (zeile == 9) {
+							strategie = nord;
+						} else if (zeile == 0) {
+							strategie = sued;
+						} else {
+							strategie = west;
+						}
+					default:
+						strategie = zufall;
+						break;
+					}
+				break;
+			default:
+				naechster = 2; //KI ist nochmal dran
+				switch (strategie) {
+					case nord: 
+						strategie = sued; 
+						break;
+					case ost:
+						strategie = west;
+						break;
+					case sued:
+						strategie = nord;
+						break;
+					case west:
+						strategie = ost;
+						break;
+					case zufall:
+					default:
+						break;
+				}
+				break;
+		} 
+		
+		//naechster = 1; 
 	}
 
 	spielerBrett -> printBrett();
