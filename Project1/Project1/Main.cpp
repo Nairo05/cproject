@@ -16,6 +16,7 @@ int spielZug(int naechster);
 
 enum kiStrategien {zufall, nord, ost, sued, west}; 
 kiStrategien strategie = zufall;
+int strategieWechsel;
 int kiTarget_x;
 int kiTarget_y;
 
@@ -358,19 +359,57 @@ int spielZug(int n) {
 				naechster = 1; //Spieler ist dran
 				switch (strategie) {				//TODO: Deadlock fixen: Wenn z.B. vertikales Schiff getroffen, kann ein unendlicher Wechsel zw. west-ost strategie folgen...
 					case nord: 
-						strategie = sued; 
+						if(strategieWechsel == 0) {
+							strategie = sued;
+							strategieWechsel++;
+						} else if (strategieWechsel >= 3) {
+							strategie = west;
+							strategieWechsel = 0;
+						} else {
+							strategie = west;
+							strategieWechsel++;
+						} 
 						break;
 					case ost:
-						strategie = west;
+						if(strategieWechsel == 0) {
+							strategie = west;
+							strategieWechsel++; 
+						} else if (strategieWechsel >= 3) {
+							strategie = nord;
+							strategieWechsel = 0;
+						} else {
+							strategie = nord;
+							strategieWechsel = 0;
+						} 
 						break;
 					case sued:
-						strategie = nord;
+						if(strategieWechsel == 0) {
+							strategie = nord;
+							strategieWechsel++; 
+						} else if (strategieWechsel >= 3) {
+							strategie = ost;
+							strategieWechsel = 0;
+						} else {
+							strategie = ost;
+							strategieWechsel++;
+						} 
 						break;
 					case west:
-						strategie = ost;
+						if(strategieWechsel == 0) {
+							strategie = ost;
+							strategieWechsel++; 
+						} else if (strategieWechsel >= 3) {
+							strategie = sued;
+							strategieWechsel = 0;
+						} else {
+							strategie = sued;
+							strategieWechsel++;
+						} 
 						break;
 					case zufall:
 					default:
+						strategie = zufall;
+						strategieWechsel = 0;
 						break;
 					}
 				break;
@@ -381,26 +420,30 @@ int spielZug(int n) {
 				spielerBrett -> field[zeile][spalte] = 2;
 				naechster = 2; //KI ist nochmal dran
 				//TODO: Prüfen auf "Versenkt"
-				//if versenkt=true => strategie=zufall, else:
+				//if versenkt=true => strategie=zufall, strategieWechsel=0, else:
 				switch (strategie) {
 					case nord: 
 						if(zeile == 0) {
 							strategie = sued;
+							strategieWechsel++;
 						} 
 						break;
 					case ost:
 						if(spalte == 0) {
 							strategie = west;
+							strategieWechsel++;
 						} 
 						break;
 					case sued:
 						if(zeile == 9) {
 							strategie = nord;
+							strategieWechsel++;
 						} 
 						break;
 					case west:
 						if(spalte == 9) {
 							strategie = ost;
+							strategieWechsel++;
 						} 
 						break;
 					case zufall:
@@ -414,38 +457,81 @@ int spielZug(int n) {
 							strategie = sued;
 						} else {
 							strategie = west;
+							std::cout << "Strategie wurde nach Zufallstreffer auf WEST gesetzt!" << std::endl;
 						}
+						break;
 					default:
 						strategie = zufall;
 						break;
 					}
 				break;
 			default:
+				unzulaessig= true;
 				naechster = 2; //KI ist nochmal dran
-				switch (strategie) {
+				switch (strategie) {				//TODO: Deadlock fixen: Wenn z.B. vertikales Schiff getroffen, kann ein unendlicher Wechsel zw. west-ost strategie folgen...
 					case nord: 
-						strategie = sued; 
+						if(strategieWechsel == 0) {
+							strategie = sued;
+							strategieWechsel++;
+						} else if (strategieWechsel >= 3) {
+							strategie = west;
+							strategieWechsel = 0;
+						} else {
+							strategie = west;
+							strategieWechsel++;
+						} 
 						break;
 					case ost:
-						strategie = west;
+						if(strategieWechsel == 0) {
+							strategie = west;
+							strategieWechsel++; 
+						} else if (strategieWechsel >= 3) {
+							strategie = nord;
+							strategieWechsel = 0;
+						} else {
+							strategie = nord;
+							strategieWechsel = 0;
+						} 
 						break;
 					case sued:
-						strategie = nord;
+						if(strategieWechsel == 0) {
+							strategie = nord;
+							strategieWechsel++; 
+						} else if (strategieWechsel >= 3) {
+							strategie = ost;
+							strategieWechsel = 0;
+						} else {
+							strategie = ost;
+							strategieWechsel++;
+						} 
 						break;
 					case west:
-						strategie = ost;
+						if(strategieWechsel == 0) {
+							strategie = ost;
+							strategieWechsel++; 
+						} else if (strategieWechsel >= 3) {
+							strategie = sued;
+							strategieWechsel = 0;
+						} else {
+							strategie = sued;
+							strategieWechsel++;
+						} 
 						break;
 					case zufall:
 					default:
+						strategie = zufall;
+						strategieWechsel = 0;
 						break;
 				}
-				break;
+			break;
 		} 
 		
 		//naechster = 1; 
 	}
-
-	spielerBrett -> printBrett();
-	kiBrett -> printBrett();
+	if (!unzulaessig) {
+		spielerBrett -> printBrett();
+		kiBrett -> printBrett();
+	}
+	
 	return naechster;
 }
