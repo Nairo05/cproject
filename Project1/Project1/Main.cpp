@@ -35,6 +35,7 @@ int main() {
 	std::cout << "Das Spiel folgt den bekannten Regeln und bezieht sich auf folgendes Feld: " << std::endl << std::endl;
 	kiBrett -> printBrett();
 	std::cout << std::endl << "Viel Erfolg!" << std::endl << std::endl;
+	std::cout << "Das Spielbrett wird nun vorbereitet. Bitte warten..." << std::endl << std::endl;
 	
 	schiffeSetzen();
 
@@ -112,19 +113,37 @@ int kiSchiffeSetzen(int shipSize) {
 			endX = x; 
 		}
 		
-		//Prüfen auf Überschneidung:
+		//Prüfen auf Überschneidung bzw. Kollission:
 		ueberschneidung = false;
 		if (orientation == 0) {
 			for (int i = startX; i <= endX; i++) {
 				if(kiBrett -> field[startY][i] > 0) {
 					ueberschneidung = true;
 				}
+				if(kiBrett -> field[startY-1][i] > 0) {
+					ueberschneidung = true;
+				}
+				if(kiBrett -> field[startY+1][i] > 0) {
+					ueberschneidung = true;
+				}
+			}
+			if((kiBrett -> field[startY][startX-1] > 0) || (kiBrett -> field[startY][endX+1] > 0)) {
+				ueberschneidung = true;
 			}
 		} else if (orientation == 1) {
 			for (int i = startY; i <= endY; i++) {
 				if(kiBrett -> field[i][startX] > 0) {
 					ueberschneidung = true;
 				}
+				if(kiBrett -> field[i][startX+1] > 0) {
+					ueberschneidung = true;
+				}
+				if(kiBrett -> field[i][startX-1] > 0) {
+					ueberschneidung = true;
+				}
+			}
+			if((kiBrett -> field[startY-1][startX] > 0) || (kiBrett -> field[endY+1][startX] > 0)) {
+				ueberschneidung = true;
 			}
 		}
 
