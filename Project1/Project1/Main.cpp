@@ -120,14 +120,14 @@ int kiSchiffeSetzen(int shipSize) {
 				if(kiBrett -> field[startY][i] > 0) {
 					ueberschneidung = true;
 				}
-				if(kiBrett -> field[startY-1][i] > 0) {
+				if(kiBrett -> field[startY-1][i] == 1) {
 					ueberschneidung = true;
 				}
-				if(kiBrett -> field[startY+1][i] > 0) {
+				if(kiBrett -> field[startY+1][i] == 1) {
 					ueberschneidung = true;
 				}
 			}
-			if((kiBrett -> field[startY][startX-1] > 0) || (kiBrett -> field[startY][endX+1] > 0)) {
+			if((kiBrett -> field[startY][startX-1] == 1) || (kiBrett -> field[startY][endX+1] == 1)) {
 				ueberschneidung = true;
 			}
 		} else if (orientation == 1) {
@@ -135,14 +135,14 @@ int kiSchiffeSetzen(int shipSize) {
 				if(kiBrett -> field[i][startX] > 0) {
 					ueberschneidung = true;
 				}
-				if(kiBrett -> field[i][startX+1] > 0) {
+				if(kiBrett -> field[i][startX+1] == 1) {
 					ueberschneidung = true;
 				}
-				if(kiBrett -> field[i][startX-1] > 0) {
+				if(kiBrett -> field[i][startX-1] == 1) {
 					ueberschneidung = true;
 				}
 			}
-			if((kiBrett -> field[startY-1][startX] > 0) || (kiBrett -> field[endY+1][startX] > 0)) {
+			if((kiBrett -> field[startY-1][startX] == 1) || (kiBrett -> field[endY+1][startX] == 1)) {
 				ueberschneidung = true;
 			}
 		}
@@ -207,12 +207,30 @@ int spielerSchiffeSetzen(int shipSize) {
 				if(spielerBrett -> field[zeile][i] > 0) {
 					unzulaessig = true;
 				}
+				if(spielerBrett -> field[zeile+1][i] == 1) {
+					unzulaessig = true;
+				}
+				if(spielerBrett -> field[zeile-1][i] == 1) {
+					unzulaessig = true;
+				}
+			}
+			if((spielerBrett -> field[zeile][spalte-1] == 1) || (spielerBrett -> field[zeile][spalte+shipSize] == 1)) {
+				unzulaessig = true;
 			}
 		} else if (o == 'v') {
 			for (int i = zeile; i > zeile-shipSize; i--) {
 				if(spielerBrett -> field[i][spalte] > 0) {
 					unzulaessig = true;
 				}
+				if(spielerBrett -> field[i][spalte+1] == 1) {
+					unzulaessig = true;
+				}
+				if(spielerBrett -> field[i][spalte-1] == 1) {
+					unzulaessig = true;
+				}
+			}
+			if((spielerBrett -> field[zeile+1][spalte] == 1) || (spielerBrett -> field[zeile-shipSize][spalte] == 1)) {
+				unzulaessig = true;
 			}
 		}
 		}
@@ -376,6 +394,13 @@ int spielZug(int n) {
 			spalte = generateRandom(9);
 			break;
 		}
+
+		if(zeile < 0 || zeile > 9 || spalte < 0 || spalte > 9) {
+			strategie = zufall;
+			strategieWechsel = 0;
+			std::cout << "Strategiereset" << std::endl;
+			return 2;
+		} //Sollte es bei der Koordinatenwahl zu einem Fehler kommen, wird Strategie auf Zufall zurückgesetzt und KI ist nochmal dran.
 		
 		std::cout << zeile << spalte << std::endl;
 
@@ -384,7 +409,7 @@ int spielZug(int n) {
 				std::cout << "KI hat daneben geschossen!" << std::endl;
 				spielerBrett -> field[zeile][spalte] = 4;
 				naechster = 1; //Spieler ist dran
-				switch (strategie) {				//TODO: Deadlock fixen: Wenn z.B. vertikales Schiff getroffen, kann ein unendlicher Wechsel zw. west-ost strategie folgen...
+				switch (strategie) {
 					case nord: 
 						if(strategieWechsel == 0) {
 							strategie = sued;
