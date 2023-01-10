@@ -60,14 +60,21 @@ int schiffeSetzen() { //1x2er 3x3er 1x4er 1x5er
 	kiSchiffeSetzen(3);
 	kiSchiffeSetzen(2);
 
+	kiBrett -> printBrett();
+
 	//Setzen der Schiffe für den Spieler
 	spielerSchiffeSetzen(5);
+	spielerBrett -> printBrett();
 	spielerSchiffeSetzen(4);
+	spielerBrett -> printBrett();
 	spielerSchiffeSetzen(3);
+	spielerBrett -> printBrett();
 	spielerSchiffeSetzen(3);
+	spielerBrett -> printBrett();
 	spielerSchiffeSetzen(3);
+	spielerBrett -> printBrett();
 	spielerSchiffeSetzen(2);
-	
+
 	return 0;
 }
 
@@ -79,9 +86,9 @@ int kiSchiffeSetzen(int shipSize) {
 	
 	bool ueberschneidung = false;
 	do {
-		int x = generateRandom(10);
-		int y = generateRandom(10);
-		int orientation = generateRandom(2);
+		int x = generateRandom(9);
+		int y = generateRandom(9);
+		int orientation = generateRandom(1);
 
 		if(orientation == 0) {
 			if ((x + shipSize) > 10) {
@@ -218,8 +225,9 @@ int spielerSchiffeSetzen(int shipSize) {
 }
 
 int generateRandom(int max) {
-	srand((int) time(0));
-	return rand() % max;
+	srand((unsigned)time(NULL));
+	int min = 0;
+    return (rand() % (max - min +1) + min);
 }
 
 int registerToField(int startX, int endX, int startY, int endY, int orientation, Brett* brett) {
@@ -345,8 +353,8 @@ int spielZug(int n) {
 			break;
 		case zufall:
 		default:
-			zeile = generateRandom(10);
-			spalte = generateRandom(10);
+			zeile = generateRandom(9);
+			spalte = generateRandom(9);
 			break;
 		}
 		
