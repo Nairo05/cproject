@@ -120,30 +120,52 @@ int kiSchiffeSetzen(int shipSize) {
 				if(kiBrett -> field[startY][i] > 0) {
 					ueberschneidung = true;
 				}
-				if(kiBrett -> field[startY-1][i] == 1) {
-					ueberschneidung = true;
+				if (startY != 0) {
+					if(kiBrett -> field[startY-1][i] == 1) {
+						ueberschneidung = true;
+					}
 				}
-				if(kiBrett -> field[startY+1][i] == 1) {
+				if (startY != 9) {
+					if(kiBrett -> field[startY+1][i] == 1) {
+						ueberschneidung = true;
+					}
+				}
+			}
+			if (startX != 0) {
+				if (kiBrett -> field[startY][startX-1] == 1) {
 					ueberschneidung = true;
 				}
 			}
-			if((kiBrett -> field[startY][startX-1] == 1) || (kiBrett -> field[startY][endX+1] == 1)) {
-				ueberschneidung = true;
+			if (endX != 9) {
+				if (kiBrett -> field[startY][endX+1] == 1) {
+					ueberschneidung = true;
+				}
 			}
 		} else if (orientation == 1) {
 			for (int i = startY; i <= endY; i++) {
 				if(kiBrett -> field[i][startX] > 0) {
 					ueberschneidung = true;
 				}
-				if(kiBrett -> field[i][startX+1] == 1) {
-					ueberschneidung = true;
+				if (startX != 9) {
+					if(kiBrett -> field[i][startX+1] == 1) {
+						ueberschneidung = true;
+					}
 				}
-				if(kiBrett -> field[i][startX-1] == 1) {
+				if (startX != 0) {
+					if(kiBrett -> field[i][startX-1] == 1) {
+						ueberschneidung = true;
+					}
+				}	
+			}
+			if (startY != 0) {
+				if (kiBrett -> field[startY-1][startX] ==  1) {
 					ueberschneidung = true;
 				}
 			}
-			if((kiBrett -> field[startY-1][startX] == 1) || (kiBrett -> field[endY+1][startX] == 1)) {
-				ueberschneidung = true;
+			if (endY != 9) {
+				if (kiBrett -> field[endY+1][startX] == 1) {
+					ueberschneidung = true;
+				}
 			}
 		}
 
@@ -206,33 +228,69 @@ int spielerSchiffeSetzen(int shipSize) {
 			for (int i = spalte; i < spalte+shipSize; i++) {
 				if(spielerBrett -> field[zeile][i] > 0) {
 					unzulaessig = true;
+					std::cout << "+" << std::endl;
 				}
-				if(spielerBrett -> field[zeile+1][i] == 1) {
-					unzulaessig = true;
+				
+				if (zeile !=9) {
+					if(spielerBrett -> field[zeile+1][i] == 1) {
+						unzulaessig = true;
+						std::cout << "++" << std::endl;
+					}
 				}
-				if(spielerBrett -> field[zeile-1][i] == 1) {
+				
+				if (zeile != 0) {
+					if(spielerBrett -> field[zeile-1][i] == 1) {
+						unzulaessig = true;
+						std::cout << "+++" << std::endl;
+					}
+				}
+				
+			}
+
+			if (spalte !=0) {
+				if (spielerBrett -> field[zeile][spalte-1] == 1) {
 					unzulaessig = true;
+					std::cout << "++++" << std::endl;
 				}
 			}
-			if((spielerBrett -> field[zeile][spalte-1] == 1) || (spielerBrett -> field[zeile][spalte+shipSize] == 1)) {
-				unzulaessig = true;
-			}
-		} else if (o == 'v') {
-			for (int i = zeile; i > zeile-shipSize; i--) {
-				if(spielerBrett -> field[i][spalte] > 0) {
+			if ((spalte+shipSize-1) != 9) {
+				if (spielerBrett -> field[zeile][spalte+shipSize] == 1) {
 					unzulaessig = true;
-				}
-				if(spielerBrett -> field[i][spalte+1] == 1) {
-					unzulaessig = true;
-				}
-				if(spielerBrett -> field[i][spalte-1] == 1) {
-					unzulaessig = true;
+					std::cout << "+++++" << std::endl;
 				}
 			}
-			if((spielerBrett -> field[zeile+1][spalte] == 1) || (spielerBrett -> field[zeile-shipSize][spalte] == 1)) {
-				unzulaessig = true;
+		
+			} else if (o == 'v') {
+				for (int i = zeile; i > zeile-shipSize; i--) {
+					if(spielerBrett -> field[i][spalte] > 0) {
+						unzulaessig = true;
+					}
+					if (spalte != 9) {
+						if(spielerBrett -> field[i][spalte+1] == 1) {
+							unzulaessig = true;
+						}
+					}
+				
+					if (spalte != 0) {
+						if(spielerBrett -> field[i][spalte-1] == 1) {
+						unzulaessig = true;
+					}
+					}
+				
+				}
+
+				if (zeile != 9) {
+					if (spielerBrett -> field[zeile+1][spalte] == 1) {
+						unzulaessig = true;
+					}
+				}
+				if (zeile != 0) {
+					if (spielerBrett -> field[zeile-shipSize][spalte] == 1) {
+						unzulaessig = true;
+					}
+				}
+
 			}
-		}
 		}
 
 		if (unzulaessig) {
