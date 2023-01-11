@@ -359,7 +359,6 @@ int spielZug(int n) {
 					std::cout << "Treffer!" << std::endl;
 					kiBrett -> field[zeile][spalte] = 2;
 					naechster = 1; //Spieler ist nochmal dran
-					//TODO: Prüfen auf "Versenkt"
 					break;
 				default:
 					std::cout << "Du hast bereits auf dieses Feld geschossen!" << std::endl;
@@ -471,8 +470,19 @@ int spielZug(int n) {
 				kiTarget_y = zeile;
 				spielerBrett -> field[zeile][spalte] = 2;
 				naechster = 2; //KI ist nochmal dran
-				//TODO: Prüfen auf "Versenkt"
-				//if versenkt=true => strategie=zufall, strategieWechsel=0, else:
+
+				for (int i = 0; i < spielerSchiffe.size(); i++){
+					if(spielerSchiffe.at(i) -> contains(kiTarget_x, kiTarget_y)) {
+						spielerSchiffe.at(i) -> hitted();
+						if (spielerSchiffe.at(i) -> isVersenkt()) {
+						
+							strategie = zufall;
+							strategieWechsel = 0;
+
+						}
+					}
+				}
+			
 				switch (strategie) {
 					case nord: 
 						if(zeile == 0) {
@@ -520,7 +530,7 @@ int spielZug(int n) {
 			default:
 				unzulaessig= true;
 				naechster = 2; //KI ist nochmal dran
-				switch (strategie) {				//TODO: Deadlock fixen: Wenn z.B. vertikales Schiff getroffen, kann ein unendlicher Wechsel zw. west-ost strategie folgen...
+				switch (strategie) {	
 					case nord: 
 						if(strategieWechsel == 0) {
 							strategie = sued;

@@ -11,3 +11,37 @@ void Schiff::setPosition(int sX, int eX, int sY, int eY) {
     startY = sY;
     endY = eY;
 }
+
+bool Schiff::contains(int x, int y) {
+    if(orientation == 'h') {
+        if (startY == endY && endY == y) {
+            if (x >= startX && x <= endX) {
+                return true;
+            }
+        }
+    } else if (orientation == 'v') {
+        if (startX == endX && endX == x){
+            if (startY >= y && endY <= y){
+                return true;
+            }
+
+        }
+
+    }
+    return false;
+}
+
+void Schiff::setOrientation(char getOrientation) {
+    orientation = getOrientation;
+}
+
+void Schiff::hitted() {
+    hitpoints++;
+}
+
+bool Schiff::isVersenkt() {
+    if (hitpoints >= size) {
+        return true;
+    }
+    return false;
+}
