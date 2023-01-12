@@ -404,46 +404,66 @@ int spielZug(int n) {
 		}
 		if (unzulaessig) {
 			std::cout << "---[ Eingabe falsch, versuche es nochmal ]---" << std::endl;
-			naechster = 1; //Spieler ist nochmal dran.
+			naechster = 1;
 		} else {
 			//Prüfen, ob ein Schiff auf dem kiBrett getroffen bzw. versenkt wurde:
 			switch (kiBrett -> field[zeile][spalte]) {
 				case 0:
 					std::cout << "Daneben!" << std::endl;
 					kiBrett -> field[zeile][spalte] = 4;
-					naechster = 2; //KI ist dran
+					naechster = 2;
 					break;
 				case 1:
 					std::cout << "Treffer!" << std::endl;
 					kiBrett -> field[zeile][spalte] = 2;
 					naechster = 1; //Spieler ist nochmal dran
+					//TODO: Versenkt-Prüfung auf dem kiBrett und Markieren als 3.
 					break;
 				default:
 					std::cout << "Du hast bereits auf dieses Feld geschossen!" << std::endl;
-					naechster = 1; //Spieler ist nochmal dran weil es gemein ist, Dummheit zu bestrafen :/
+					naechster = 1;
 					break;
 			} 
 		}
 	} else if (n == 2) { //KI
-		std::cout << "---[ Die KI ist dran - Warum zitterst du so? ]---" << std::endl;
 		int zeile;
 		int spalte;
 		switch (strategie) {
 		case nord: 
-			zeile = kiTarget_y - 1;
+			if (kiTarget_y != 0) {
+				zeile = kiTarget_y - 1;
+			} else {
+				zeile = kiTarget_y;
+				strategie = sued;
+			}
 			spalte = kiTarget_x;
 			break;
 		case ost:
 			zeile = kiTarget_y;
-			spalte = kiTarget_x - 1;
+			if (kiTarget_x != 9) {
+				spalte = kiTarget_x + 1;
+			} else {
+				spalte = kiTarget_x;
+				strategie = west;
+			}
 			break;
 		case sued:
-			zeile = kiTarget_y + 1;
+			if (kiTarget_y != 9) {
+				zeile = kiTarget_y + 1;
+			} else {
+				zeile = kiTarget_y;
+				strategie = nord;
+			}
 			spalte = kiTarget_x;
 			break;
 		case west:
 			zeile = kiTarget_y;
-			spalte = kiTarget_x + 1;
+			if (kiTarget_x != 0) {
+				spalte = kiTarget_x - 1;
+			} else {
+				spalte = kiTarget_x;
+				strategie = ost;
+			}
 			break;
 		case zufall:
 		default:
@@ -458,200 +478,85 @@ int spielZug(int n) {
 			std::cout << "Strategiereset" << std::endl;
 			return 2;
 		} //Sollte es bei der Koordinatenwahl zu einem Fehler kommen, wird Strategie auf Zufall zurückgesetzt und KI ist nochmal dran.
-		
-		std::cout << zeile << spalte << std::endl;
 
 		switch (spielerBrett -> field[zeile][spalte]) {
 			case 0:
+				std::cout << "---[ Die KI ist dran - Warum zitterst du so? ]---" << std::endl;
+				std::cout << (char)(zeile+65) << spalte << std::endl;
 				std::cout << "KI hat daneben geschossen!" << std::endl;
 				spielerBrett -> field[zeile][spalte] = 4;
-				naechster = 1; //Spieler ist dran
-				switch (strategie) {
-					case nord: 
-						if(strategieWechsel == 0) {
-							strategie = sued;
-							strategieWechsel++;
-						} else if (strategieWechsel >= 3) {
-							strategie = west;
-							strategieWechsel = 0;
-						} else {
-							strategie = west;
-							strategieWechsel++;
-						} 
-						break;
-					case ost:
-						if(strategieWechsel == 0) {
-							strategie = west;
-							strategieWechsel++; 
-						} else if (strategieWechsel >= 3) {
-							strategie = nord;
-							strategieWechsel = 0;
-						} else {
-							strategie = nord;
-							strategieWechsel = 0;
-						} 
-						break;
-					case sued:
-						if(strategieWechsel == 0) {
-							strategie = nord;
-							strategieWechsel++; 
-						} else if (strategieWechsel >= 3) {
-							strategie = ost;
-							strategieWechsel = 0;
-						} else {
-							strategie = ost;
-							strategieWechsel++;
-						} 
-						break;
-					case west:
-						if(strategieWechsel == 0) {
-							strategie = ost;
-							strategieWechsel++; 
-						} else if (strategieWechsel >= 3) {
-							strategie = sued;
-							strategieWechsel = 0;
-						} else {
-							strategie = sued;
-							strategieWechsel++;
-						} 
-						break;
-					case zufall:
-					default:
-						strategie = zufall;
-						strategieWechsel = 0;
-						break;
-					}
+				if (strategie == west) {
+					strategie = ost;
+				} else if (strategie == ost) {
+					strategie = nord;
+				} else if (strategie == nord) {
+					strategie = sued;
+				} else if (strategie = sued) {
+					strategie = west;
+				} else {
+					strategie = zufall;
+				}
+				naechster = 1;
+				break;
+			case 4:
+				spielerBrett -> field[zeile][spalte] = 4;
+				if (strategie == west) {
+					strategie = ost;
+				} else if (strategie == ost) {
+					strategie = nord;
+				} else if (strategie == nord) {
+					strategie = sued;
+				} else if (strategie = sued) {
+					strategie = west;
+				} else {
+					strategie = zufall;
+				}
+				naechster = 2;
 				break;
 			case 1:
-				std::cout << "KI hat dein Schiff getroffen!" << std::endl;
+				std::cout << "---[ Die KI ist dran - Warum zitterst du so? ]---" << std::endl;
+				std::cout << (char)(zeile+65) << spalte << std::endl;
+				std::cout << "KI hat einen Treffer erzielt!" << std::endl;
 				kiTarget_x = spalte;
 				kiTarget_y = zeile;
 				spielerBrett -> field[zeile][spalte] = 2;
-				naechster = 2; //KI ist nochmal dran
-
+				if (strategie == zufall) {
+					strategie = west;
+				}
 				for (int i = 0; i < spielerSchiffe.size(); i++){
 					if(spielerSchiffe.at(i) -> contains(kiTarget_x, kiTarget_y)) {
 						spielerSchiffe.at(i) -> hitted();
 						if (spielerSchiffe.at(i) -> isVersenkt()) {
-						
+							std::cout << "Dein Schiff wurde versenkt!" << std::endl;
+							kiTarget_x = 5; //Target vom Rand wegsetzen
+							kiTarget_y = 5; //Target vom Rand wegsetzen
 							strategie = zufall;
 							strategieWechsel = 0;
-
+							//TODO: Alle Felder die das Schiff einnimmt zu 3.
+							//TODO: entsprechendes Schiff deleten
+							//TODO: Pointer darauf aus Vektor löschen
 						}
 					}
 				}
-			
-				switch (strategie) {
-					case nord: 
-						if(zeile == 0) {
-							strategie = sued;
-							strategieWechsel++;
-						} 
-						break;
-					case ost:
-						if(spalte == 0) {
-							strategie = west;
-							strategieWechsel++;
-						} 
-						break;
-					case sued:
-						if(zeile == 9) {
-							strategie = nord;
-							strategieWechsel++;
-						} 
-						break;
-					case west:
-						if(spalte == 9) {
-							strategie = ost;
-							strategieWechsel++;
-						} 
-						break;
-					case zufall:
-						if (spalte == 9) {
-							strategie = ost;
-						} else if (spalte == 0) {
-							strategie = west;
-						} else if (zeile == 9) {
-							strategie = nord;
-						} else if (zeile == 0) {
-							strategie = sued;
-						} else {
-							strategie = west;
-							std::cout << "Strategie wurde nach Zufallstreffer auf WEST gesetzt!" << std::endl;
-						}
-						break;
-					default:
-						strategie = zufall;
-						break;
-					}
+				naechster = 2;
+				break;
+			case 2:
+				kiTarget_x = spalte;
+				kiTarget_y = zeile;
+				naechster = 2;
 				break;
 			default:
-				unzulaessig= true;
-				naechster = 2; //KI ist nochmal dran
-				switch (strategie) {	
-					case nord: 
-						if(strategieWechsel == 0) {
-							strategie = sued;
-							strategieWechsel++;
-						} else if (strategieWechsel >= 3) {
-							strategie = west;
-							strategieWechsel = 0;
-						} else {
-							strategie = west;
-							strategieWechsel++;
-						} 
-						break;
-					case ost:
-						if(strategieWechsel == 0) {
-							strategie = west;
-							strategieWechsel++; 
-						} else if (strategieWechsel >= 3) {
-							strategie = nord;
-							strategieWechsel = 0;
-						} else {
-							strategie = nord;
-							strategieWechsel = 0;
-						} 
-						break;
-					case sued:
-						if(strategieWechsel == 0) {
-							strategie = nord;
-							strategieWechsel++; 
-						} else if (strategieWechsel >= 3) {
-							strategie = ost;
-							strategieWechsel = 0;
-						} else {
-							strategie = ost;
-							strategieWechsel++;
-						} 
-						break;
-					case west:
-						if(strategieWechsel == 0) {
-							strategie = ost;
-							strategieWechsel++; 
-						} else if (strategieWechsel >= 3) {
-							strategie = sued;
-							strategieWechsel = 0;
-						} else {
-							strategie = sued;
-							strategieWechsel++;
-						} 
-						break;
-					case zufall:
-					default:
-						strategie = zufall;
-						strategieWechsel = 0;
-						break;
-				}
-			break;
-		} 
+				strategie = zufall;
+				naechster = 1;
+		}
 		
-		//naechster = 1; 
 	}
+	
+	
 	if (!unzulaessig) {
 		spielerBrett -> printBrett();
 		kiBrett -> printBrett();
-	}
+	} 
 	
 	return naechster;
 }

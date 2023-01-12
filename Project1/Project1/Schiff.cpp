@@ -3,6 +3,7 @@
 
 Schiff::Schiff(int s) {
     size = s;
+    hitpoints = 0;
 }
 
 void Schiff::setPosition(int sX, int eX, int sY, int eY) {
