@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <random>
 #include <time.h>
 #include "Brett.h"
 #include "Schiff.h"
@@ -13,6 +14,11 @@ int registerToField(int sX, int eX, int sY, int eY, int o, Brett* brett);
 int spielStarten();
 int spielZug(int naechster);
 /**/
+
+std::random_device rd;
+//Standard mersenne_twister_engine seeded with rd()
+std::mt19937 gen1(rd());
+std::mt19937 gen2(rd());
 
 enum kiStrategien {zufall, nord, ost, sued, west}; 
 kiStrategien strategie = zufall;
@@ -320,9 +326,13 @@ int spielerSchiffeSetzen(int shipSize) {
 }
 
 int generateRandom(int max) {
+	
 	srand((unsigned)time(NULL));
 	int min = 0;
     return (rand() % (max - min +1) + min);
+	
+	//std::uniform_int_distribution<> dis(0, max);
+	//return dis(gen1);
 }
 
 int registerToField(int startX, int endX, int startY, int endY, int orientation, Brett* brett) {
