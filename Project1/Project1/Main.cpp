@@ -25,6 +25,7 @@ kiStrategien strategie = zufall;
 int strategieWechsel;
 int kiTarget_x;
 int kiTarget_y;
+int cyclicCounter = 0;
 
 std::vector<Schiff *> spielerSchiffe;
 std::vector<Schiff *> kiSchiffe;
@@ -404,12 +405,12 @@ int spielStarten() {
 
 int spielZug(int n) {
 	int naechster;
-	int zeile;
-	int spalte;
 	bool unzulaessig = false;
 
 	if (n == 1) { //Spieler
 
+		int zeile;
+		int spalte;
 		std::cout << "---[ Du bist an der Reihe - Nenne eine Koordinate zum Beschuss ]---" << std::endl;
 		
 		std::string p;
@@ -504,7 +505,7 @@ int spielZug(int n) {
 		if(zeile < 0 || zeile > 9 || spalte < 0 || spalte > 9) {
 			strategie = zufall;
 			strategieWechsel = 0;
-			std::cout << "Strategiereset" << std::endl;
+			//std::cout << "Strategiereset" << std::endl;
 			return 2;
 		} //Sollte es bei der Koordinatenwahl zu einem Fehler kommen, wird Strategie auf Zufall zurückgesetzt und KI ist nochmal dran.
 
@@ -513,6 +514,7 @@ int spielZug(int n) {
 				std::cout << "---[ Die KI ist dran - Warum zitterst du so? ]---" << std::endl;
 				std::cout << (char)(zeile+65) << spalte << std::endl;
 				std::cout << "KI hat daneben geschossen!" << std::endl;
+				cyclicCounter = 0;
 				spielerBrett -> field[zeile][spalte] = 4;
 				if (strategie == west) {
 					strategie = ost;
@@ -520,7 +522,7 @@ int spielZug(int n) {
 					strategie = nord;
 				} else if (strategie == nord) {
 					strategie = sued;
-				} else if (strategie = sued) {
+				} else if (strategie == sued) {
 					strategie = west;
 				} else {
 					strategie = zufall;
@@ -528,14 +530,19 @@ int spielZug(int n) {
 				naechster = 1;
 				break;
 			case 4:
-				spielerBrett -> field[zeile][spalte] = 4;
+				cyclicCounter++;
+				if (cyclicCounter >= 5) {
+					cyclicCounter = 0;
+					strategie = zufall;
+					return 1;
+				}
 				if (strategie == west) {
 					strategie = ost;
 				} else if (strategie == ost) {
 					strategie = nord;
 				} else if (strategie == nord) {
 					strategie = sued;
-				} else if (strategie = sued) {
+				} else if (strategie == sued) {
 					strategie = west;
 				} else {
 					strategie = zufall;
@@ -543,6 +550,7 @@ int spielZug(int n) {
 				naechster = 2;
 				break;
 			case 1:
+				cyclicCounter = 0;
 				std::cout << "---[ Die KI ist dran - Warum zitterst du so? ]---" << std::endl;
 				std::cout << (char)(zeile+65) << spalte << std::endl;
 				std::cout << "KI hat einen Treffer erzielt!" << std::endl;

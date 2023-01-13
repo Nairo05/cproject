@@ -17,7 +17,7 @@ void Brett::printBrett() {
 	if (playerid == 1) {
 		std::cout << std::endl << "Feld von Spieler " << playerid << ":" << std::endl;
 	} else {
-		std::cout << std::endl << "Feld von der KI :" << std::endl;
+		std::cout << std::endl << "Feld von der KI:" << std::endl;
 	}
 	std::cout << " ";	
 	
