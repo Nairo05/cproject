@@ -1,4 +1,5 @@
 #pragma once
+#include "Brett.h"
 class Schiff {
 public:
 	Schiff(int size);
@@ -8,7 +9,7 @@ public:
     bool contains(int x, int y);
     void hitted();
     bool isVersenkt();
-
+    void replace(Brett* brett);
 private:
 	int startX;
     int endX;

@@ -46,3 +46,17 @@ bool Schiff::isVersenkt() {
     }
     return false;
 }
+
+void Schiff::replace(Brett* brett) {
+    if(orientation == 0) {
+       for (int shipx = startX; shipx <= endX; shipx++) {
+            brett -> field[startY][shipx] = 3;
+       }
+       
+    } else if (orientation == 1) {
+        for (int shipy = startY; shipy <= endY; shipy++) {
+            brett -> field[shipy][startX] = 3;
+        }
+    }   
+}
+

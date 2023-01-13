@@ -562,7 +562,10 @@ int spielZug(int n) {
 							strategie = zufall;
 							strategieWechsel = 0;
 
-							//TODO: Alle Felder die das Schiff einnimmt zu 3.
+							spielerSchiffe.at(i) -> replace(spielerBrett);
+
+							spielerSchiffe.erase(spielerSchiffe.begin() + i);
+			
 							//TODO: entsprechendes Schiff deleten
 							//TODO: Pointer darauf aus Vektor löschen
 						}
