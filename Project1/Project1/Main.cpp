@@ -58,6 +58,11 @@ int main() {
 	return 0;
 }
 
+void clear() {
+	system("clear");
+	system("cls");
+}
+
 int schiffeSetzen() { //1x2er 3x3er 1x4er 1x5er 
 	//Automatisches Setzen der Schiffe für KI
 	kiSchiffeSetzen(5);
@@ -67,19 +72,31 @@ int schiffeSetzen() { //1x2er 3x3er 1x4er 1x5er
 	kiSchiffeSetzen(3);
 	kiSchiffeSetzen(2);
 
+	clear();
+
 	kiBrett -> printBrett();
 
 	//Setzen der Schiffe für den Spieler
 	spielerSchiffeSetzen(5);
+	clear();
 	spielerBrett -> printBrett();
+
 	spielerSchiffeSetzen(4);
+	clear();
 	spielerBrett -> printBrett();
+
 	spielerSchiffeSetzen(3);
+	clear();
 	spielerBrett -> printBrett();
+
 	spielerSchiffeSetzen(3);
+	clear();
 	spielerBrett -> printBrett();
+
 	spielerSchiffeSetzen(3);
+	clear();
 	spielerBrett -> printBrett();
+
 	spielerSchiffeSetzen(2);
 
 	return 0;
@@ -354,6 +371,7 @@ int spielStarten() {
 	int vorheriger;
 	int naechster = spielZug(1); //Spieler darf zuerst ziehen.
 	while (!spielEnde) {
+
 		vorheriger = naechster;
 		std::cout << "Vorheriger: "<< vorheriger << std::endl;
 		naechster = spielZug(naechster);
@@ -391,6 +409,7 @@ int spielZug(int n) {
 	bool unzulaessig = false;
 
 	if (n == 1) { //Spieler
+
 		std::cout << "---[ Du bist an der Reihe - Nenne eine Koordinate zum Beschuss ]---" << std::endl;
 		
 		std::string p;
@@ -542,6 +561,7 @@ int spielZug(int n) {
 							kiTarget_y = 5; //Target vom Rand wegsetzen
 							strategie = zufall;
 							strategieWechsel = 0;
+
 							//TODO: Alle Felder die das Schiff einnimmt zu 3.
 							//TODO: entsprechendes Schiff deleten
 							//TODO: Pointer darauf aus Vektor löschen
