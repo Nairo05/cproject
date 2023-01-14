@@ -14,6 +14,7 @@ void Schiff::setPosition(int sX, int eX, int sY, int eY) {
 }
 
 bool Schiff::contains(int x, int y) {
+    std :: cout << orientation << " " << startY << " " << endY << " " << y << std:: endl;
     if(orientation == 0) {
         if (startY == endY && endY == y) {
             if (x >= startX && x <= endX) {

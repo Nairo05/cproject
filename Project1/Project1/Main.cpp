@@ -1,6 +1,5 @@
 #include <iostream>
 #include <vector>
-#include <unistd.h>
 #include <random>
 #include <time.h>
 #include "Brett.h"
@@ -32,7 +31,7 @@ Brett *kiBrett;
 int main() {
 
 	//Wir mussten die pid hinzunehmen, da sonst immer Koordinaten der Form 11, 22, 33, ... rauskamen
-	srand(time(NULL)+getpid());
+	srand(time(NULL));
 
 	spielerBrett = new Brett{1};
 	kiBrett = new Brett{2};
@@ -341,10 +340,12 @@ int spielerSchiffeSetzen(int shipSize) {
 		orientation = 0;
 		registerToField(spalte, spalte+shipSize-1, zeile, zeile, orientation, spielerBrett);
 		schiff -> setPosition(spalte, spalte+shipSize-1, zeile, zeile);
+		schiff -> setOrientation(orientation);
 	} else {
 		orientation = 1;
 		registerToField(spalte, spalte, zeile-shipSize+1, zeile, orientation, spielerBrett);
 		schiff -> setPosition(spalte, spalte, zeile-shipSize+1, zeile);
+		schiff -> setOrientation(orientation);
 	}
 	spielerSchiffe.push_back(schiff);
 	
@@ -451,9 +452,9 @@ int spielZug(int n) {
 					kiBrett -> field[zeile][spalte] = 2;
 					naechster = 1; //Spieler ist nochmal dran
 					for (int i = 0; i < kiSchiffe.size(); i++) {
-						std::cout << "Vektor: " << i << std::endl;
+						
 						if (kiSchiffe.at(i) -> contains(spalte, zeile)) {
-							std::cout << "enthalten: " << i << std::endl;
+							
 							kiSchiffe.at(i) -> hitted();
 							if (kiSchiffe.at(i) -> isVersenkt()) {
 								kiSchiffe.at(i) -> replace(kiBrett);
@@ -461,7 +462,6 @@ int spielZug(int n) {
 								delete kiSchiffe.at(i);
 
 								kiSchiffe.erase(kiSchiffe.begin() + i);
-								std::cout << "Versenkt!" << std::endl;
 							}
 						}
 					}
@@ -576,7 +576,9 @@ int spielZug(int n) {
 					strategie = west;
 				}
 				for (int i = 0; i < spielerSchiffe.size(); i++){
+					std::cout << "Vektor: " << i << std::endl;
 					if(spielerSchiffe.at(i) -> contains(kiTarget_x, kiTarget_y)) {
+						std::cout << "contains at: " << kiTarget_x << " sad " << kiTarget_y << std::endl;
 						spielerSchiffe.at(i) -> hitted();
 						if (spielerSchiffe.at(i) -> isVersenkt()) {
 							std::cout << "Dein Schiff wurde versenkt!" << std::endl;
