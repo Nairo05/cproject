@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <unistd.h>
 #include <random>
 #include <time.h>
 #include "Brett.h"
@@ -34,6 +35,8 @@ Brett *spielerBrett;
 Brett *kiBrett;
 
 int main() {
+	srand(time(NULL)+getpid());
+
 	spielerBrett = new Brett{1};
 	kiBrett = new Brett{2};
 	
@@ -345,7 +348,6 @@ int spielerSchiffeSetzen(int shipSize) {
 
 int generateRandom(int max) {
 	
-	srand((unsigned)time(NULL));
 	int min = 0;
     return (rand() % (max - min +1) + min);
 	
@@ -572,6 +574,8 @@ int spielZug(int n) {
 
 							spielerSchiffe.at(i) -> replace(spielerBrett);
 
+							delete spielerSchiffe.at(i);
+
 							spielerSchiffe.erase(spielerSchiffe.begin() + i);
 			
 							//TODO: entsprechendes Schiff deleten
@@ -592,7 +596,7 @@ int spielZug(int n) {
 		}
 		
 	}
-	
+
 	
 	if (!unzulaessig) {
 		spielerBrett -> printBrett();
