@@ -52,7 +52,7 @@ Wichtig: Beim Verfolgen einer konkreten Strategie oder Strategiefolge kann es zu
 Nach jedem Zug erfolgt die Win-Detection, die dann die while-Schleife in der Methode "spielStarten()" unterbricht. 
 In der main()-Methode wird dann letztendlich der Gewinner ausgegeben und Heap-Speicher freigegeben.
 
-##Schwierigkeiten
+## Schwierigkeiten
 - Out-of-Playfield und Koordinaten-Rechnungen: Das berechnen einzelner Schiffsfelder und Koordinaten hat viel Potenzial für Logik- und Indexfehler geboten, welches wir   voll ausgeschöpft haben xD 
 - Random Algorithmus: Aufgrund eines Fehlers hatte der Random-Algorithmus ständig dieselben Zufallssequenzen generiert, zudem immer Koordinaten der Form 11, 22, 33 usw. beschossen. Außerdem hat dieser Fehler bewirkt, dass das zufällige Setzen des KI-Spielfeldes ca. 20 Sekunden benötigt hatte.
 
