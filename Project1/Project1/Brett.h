@@ -1,4 +1,6 @@
-#pragma once
+#ifndef BRETT_CLASS_H
+#define BRETT_CLASS_H
+
 class Brett {
 public:
 	Brett(int pid);
@@ -7,3 +9,5 @@ public:
 private:
 	int playerid;
 };
+
+#endif

@@ -21,8 +21,8 @@ bool Schiff::contains(int x, int y) {
             }
         }
     } else if (orientation == 1) {
-        if (startX == endX && endX == x){
-            if (startY >= y && endY <= y){
+        if (startX == endX && endX == x) {
+            if (startY <= y && endY >= y) {
                 return true;
             }
 
@@ -48,12 +48,14 @@ bool Schiff::isVersenkt() {
 }
 
 void Schiff::replace(Brett* brett) {
+    std::cout << "In Methode angekommen mit orientation: " << orientation << std::endl;
     if(orientation == 0) {
        for (int shipx = startX; shipx <= endX; shipx++) {
             brett -> field[startY][shipx] = 3;
        }
        
     } else if (orientation == 1) {
+        std::cout << "Orientation is 1 with startY=" << startY << " and endY=" << endY << std::endl; 
         for (int shipy = startY; shipy <= endY; shipy++) {
             brett -> field[shipy][startX] = 3;
         }

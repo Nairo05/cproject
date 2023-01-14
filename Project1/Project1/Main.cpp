@@ -16,14 +16,9 @@ int spielStarten();
 int spielZug(int naechster);
 /**/
 
-std::random_device rd;
-//Standard mersenne_twister_engine seeded with rd()
-std::mt19937 gen1(rd());
-std::mt19937 gen2(rd());
 
 enum kiStrategien {zufall, nord, ost, sued, west}; 
 kiStrategien strategie = zufall;
-int strategieWechsel;
 int kiTarget_x;
 int kiTarget_y;
 int cyclicCounter = 0;
@@ -35,6 +30,8 @@ Brett *spielerBrett;
 Brett *kiBrett;
 
 int main() {
+
+	//Wir mussten die pid hinzunehmen, da sonst immer Koordinaten der Form 11, 22, 33, ... rauskamen
 	srand(time(NULL)+getpid());
 
 	spielerBrett = new Brett{1};
@@ -55,7 +52,18 @@ int main() {
 	int gewinner = spielStarten();
 
 	std::cout << "---[ SPIEL BEENDET ]---" << std::endl;
-	std::cout << "Der Gewinner ist: Spieler " << gewinner << std::endl;
+	if (gewinner == 1) {
+		std::cout << "Der Gewinner ist: Spieler " << gewinner << std::endl;
+	} else {
+		std::cout << "Der Gewinner ist: KI " << std::endl;
+	}
+
+	for (int i = 0; i < kiSchiffe.size(); i++) {
+		delete kiSchiffe.at(i);
+	}
+	for (int i = 0; i < spielerSchiffe.size(); i++) {
+		delete spielerSchiffe.at(i);
+	}
 	
 	delete spielerBrett;
 	delete kiBrett;
@@ -111,12 +119,13 @@ int kiSchiffeSetzen(int shipSize) {
 	int startY;
 	int endX;
 	int endY;
+	int orientation;
 	
 	bool ueberschneidung = false;
 	do {
 		int x = generateRandom(9);
 		int y = generateRandom(9);
-		int orientation = generateRandom(1);
+		orientation = generateRandom(1);
 
 		if(orientation == 0) {
 			if ((x + shipSize) > 10) {
@@ -201,8 +210,9 @@ int kiSchiffeSetzen(int shipSize) {
 		}
 	} while (ueberschneidung);
 	 
-	Schiff *schiff = new Schiff(shipSize); //TODO: delete
+	Schiff *schiff = new Schiff(shipSize);
 	schiff -> setPosition(startX, endX, startY, endY);
+	schiff -> setOrientation(orientation);
 	kiSchiffe.push_back(schiff);
 
 	return 0;
@@ -255,20 +265,17 @@ int spielerSchiffeSetzen(int shipSize) {
 			for (int i = spalte; i < spalte+shipSize; i++) {
 				if(spielerBrett -> field[zeile][i] > 0) {
 					unzulaessig = true;
-					std::cout << "+" << std::endl;
 				}
 				
 				if (zeile !=9) {
 					if(spielerBrett -> field[zeile+1][i] == 1) {
 						unzulaessig = true;
-						std::cout << "++" << std::endl;
 					}
 				}
 				
 				if (zeile != 0) {
 					if(spielerBrett -> field[zeile-1][i] == 1) {
 						unzulaessig = true;
-						std::cout << "+++" << std::endl;
 					}
 				}
 				
@@ -277,13 +284,11 @@ int spielerSchiffeSetzen(int shipSize) {
 			if (spalte !=0) {
 				if (spielerBrett -> field[zeile][spalte-1] == 1) {
 					unzulaessig = true;
-					std::cout << "++++" << std::endl;
 				}
 			}
 			if ((spalte+shipSize-1) != 9) {
 				if (spielerBrett -> field[zeile][spalte+shipSize] == 1) {
 					unzulaessig = true;
-					std::cout << "+++++" << std::endl;
 				}
 			}
 		
@@ -330,7 +335,7 @@ int spielerSchiffeSetzen(int shipSize) {
 
 	} while (unzulaessig);
 	
-	Schiff *schiff = new Schiff(shipSize); //TODO: delete
+	Schiff *schiff = new Schiff(shipSize);
 	int orientation;
 	if (o == 'h') {
 		orientation = 0;
@@ -347,12 +352,8 @@ int spielerSchiffeSetzen(int shipSize) {
 }
 
 int generateRandom(int max) {
-	
 	int min = 0;
     return (rand() % (max - min +1) + min);
-	
-	//std::uniform_int_distribution<> dis(0, max);
-	//return dis(gen1);
 }
 
 int registerToField(int startX, int endX, int startY, int endY, int orientation, Brett* brett) {
@@ -449,7 +450,21 @@ int spielZug(int n) {
 					std::cout << "Treffer!" << std::endl;
 					kiBrett -> field[zeile][spalte] = 2;
 					naechster = 1; //Spieler ist nochmal dran
-					//TODO: Versenkt-Prüfung auf dem kiBrett und Markieren als 3.
+					for (int i = 0; i < kiSchiffe.size(); i++) {
+						std::cout << "Vektor: " << i << std::endl;
+						if (kiSchiffe.at(i) -> contains(spalte, zeile)) {
+							std::cout << "enthalten: " << i << std::endl;
+							kiSchiffe.at(i) -> hitted();
+							if (kiSchiffe.at(i) -> isVersenkt()) {
+								kiSchiffe.at(i) -> replace(kiBrett);
+
+								delete kiSchiffe.at(i);
+
+								kiSchiffe.erase(kiSchiffe.begin() + i);
+								std::cout << "Versenkt!" << std::endl;
+							}
+						}
+					}
 					break;
 				default:
 					std::cout << "Du hast bereits auf dieses Feld geschossen!" << std::endl;
@@ -506,8 +521,6 @@ int spielZug(int n) {
 
 		if(zeile < 0 || zeile > 9 || spalte < 0 || spalte > 9) {
 			strategie = zufall;
-			strategieWechsel = 0;
-			//std::cout << "Strategiereset" << std::endl;
 			return 2;
 		} //Sollte es bei der Koordinatenwahl zu einem Fehler kommen, wird Strategie auf Zufall zurückgesetzt und KI ist nochmal dran.
 
@@ -567,19 +580,17 @@ int spielZug(int n) {
 						spielerSchiffe.at(i) -> hitted();
 						if (spielerSchiffe.at(i) -> isVersenkt()) {
 							std::cout << "Dein Schiff wurde versenkt!" << std::endl;
-							kiTarget_x = 5; //Target vom Rand wegsetzen
-							kiTarget_y = 5; //Target vom Rand wegsetzen
-							strategie = zufall;
-							strategieWechsel = 0;
 
 							spielerSchiffe.at(i) -> replace(spielerBrett);
 
 							delete spielerSchiffe.at(i);
 
 							spielerSchiffe.erase(spielerSchiffe.begin() + i);
+
+							kiTarget_x = 5; //Target vom Rand wegsetzen
+							kiTarget_y = 5; //Target vom Rand wegsetzen
+							strategie = zufall;
 			
-							//TODO: entsprechendes Schiff deleten
-							//TODO: Pointer darauf aus Vektor löschen
 						}
 					}
 				}

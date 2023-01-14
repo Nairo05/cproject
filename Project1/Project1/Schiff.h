@@ -1,5 +1,8 @@
-#pragma once
+#ifndef SCHIFF_CLASS_H
+#define SCHIFF_CLASS_H
+
 #include "Brett.h"
+
 class Schiff {
 public:
 	Schiff(int size);
@@ -20,3 +23,5 @@ private:
     bool versenkt = false;
     int orientation;
 };
+
+#endif
