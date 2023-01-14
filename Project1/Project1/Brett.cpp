@@ -29,7 +29,19 @@ void Brett::printBrett() {
 	for (int i = 0; i < 10; i++) {
 		std::cout << (char)(zeilenBez + i) << " ";
 		for (int j = 0; j < 10; j++) {
-			std::cout << field[i][j];
+			if((playerid == 2) && (field[i][j] == 1)) {
+				std::cout << "~";
+			} else if (field[i][j] == 0) {
+				std::cout << "~";
+			} else if (field[i][j] == 2) {
+				std::cout << "X";
+			} else if (field[i][j] == 3) {
+				std::cout << "#";
+			} else if (field[i][j] == 4) {
+				std::cout << "%";
+			} else {
+				std::cout << field[i][j];
+			}
 			std::cout << " ";
 		}
 		std::cout << std::endl;

@@ -5,7 +5,6 @@
 #include "Brett.h"
 #include "Schiff.h"
 
-/**/
 int schiffeSetzen();
 int kiSchiffeSetzen(int size);
 int spielerSchiffeSetzen(int size);
@@ -13,8 +12,6 @@ int generateRandom(int max);
 int registerToField(int sX, int eX, int sY, int eY, int o, Brett* brett);
 int spielStarten();
 int spielZug(int naechster);
-/**/
-
 
 enum kiStrategien {zufall, nord, ost, sued, west}; 
 kiStrategien strategie = zufall;
@@ -28,9 +25,14 @@ std::vector<Schiff *> kiSchiffe;
 Brett *spielerBrett;
 Brett *kiBrett;
 
+void clear() {
+	system("clear");
+	system("cls");
+}
+
 int main() {
 
-	//Wir mussten die pid hinzunehmen, da sonst immer Koordinaten der Form 11, 22, 33, ... rauskamen
+	clear(); 
 	srand(time(NULL));
 
 	spielerBrett = new Brett{1};
@@ -40,11 +42,12 @@ int main() {
 	std::cout << "Kannst du es schaffen, alle Schiffe der KI zu versenken, bevor sie dich besiegt?" << std::endl;
 	std::cout << "Das Spiel folgt den bekannten Regeln und bezieht sich auf folgendes Feld: " << std::endl << std::endl;
 	kiBrett -> printBrett();
-	std::cout << std::endl << "Viel Erfolg!" << std::endl << std::endl;
-	std::cout << "Das Spielbrett wird nun vorbereitet. Bitte warten..." << std::endl << std::endl;
+	std::cout << std::endl << "Legende: ~ = Wasser; 1 = Schiff; X = Treffer; # = Versenkt; % = daneben" << std::endl << std::endl;
+	std::cout << "Viel Erfolg!" << std::endl << std::endl;
 	
 	schiffeSetzen();
 
+	clear();
 	spielerBrett -> printBrett();
 	kiBrett -> printBrett();
 
@@ -69,11 +72,6 @@ int main() {
 	return 0;
 }
 
-void clear() {
-	system("clear");
-	system("cls");
-}
-
 int schiffeSetzen() { //1x2er 3x3er 1x4er 1x5er 
 	//Automatisches Setzen der Schiffe für KI
 	kiSchiffeSetzen(5);
@@ -82,10 +80,6 @@ int schiffeSetzen() { //1x2er 3x3er 1x4er 1x5er
 	kiSchiffeSetzen(3);
 	kiSchiffeSetzen(3);
 	kiSchiffeSetzen(2);
-
-	clear();
-
-	kiBrett -> printBrett();
 
 	//Setzen der Schiffe für den Spieler
 	spielerSchiffeSetzen(5);
@@ -255,7 +249,7 @@ int spielerSchiffeSetzen(int shipSize) {
 					unzulaessig = true;
 				}
 			} else {
-				unzulaessig = true; //in dem Fall hat der Spieler was anderes als 'h' oder 'v' angegeben.
+				unzulaessig = true;
 			}
 		}
 		if (!unzulaessig) {
@@ -378,10 +372,9 @@ int spielStarten() {
 	while (!spielEnde) {
 
 		vorheriger = naechster;
-		std::cout << "Vorheriger: "<< vorheriger << std::endl;
 		naechster = spielZug(naechster);
 		spielzugCounter++;
-		//Prüfen auf Spielende, und zwar so: Wenn das Feld des Spielers der jetzt als nächstes dran ist keine 1 mehr enthält, hat der andere Spieler gewonnen!
+		//Prüfen auf Spielende: Wenn das Feld des Spielers der jetzt als nächstes dran ist keine 1 mehr enthält, hat der andere Spieler gewonnen!
 		spielEnde = true;
 		if (vorheriger == 1) {
 			for(int i = 0; i < 10; i++) {
@@ -450,13 +443,14 @@ int spielZug(int n) {
 				case 1:
 					std::cout << "Treffer!" << std::endl;
 					kiBrett -> field[zeile][spalte] = 2;
-					naechster = 1; //Spieler ist nochmal dran
+					naechster = 1;
 					for (int i = 0; i < kiSchiffe.size(); i++) {
 						
 						if (kiSchiffe.at(i) -> contains(spalte, zeile)) {
 							
 							kiSchiffe.at(i) -> hitted();
 							if (kiSchiffe.at(i) -> isVersenkt()) {
+								std::cout << "Versenkt!" << std::endl;
 								kiSchiffe.at(i) -> replace(kiBrett);
 
 								delete kiSchiffe.at(i);
@@ -576,9 +570,7 @@ int spielZug(int n) {
 					strategie = west;
 				}
 				for (int i = 0; i < spielerSchiffe.size(); i++){
-					std::cout << "Vektor: " << i << std::endl;
 					if(spielerSchiffe.at(i) -> contains(kiTarget_x, kiTarget_y)) {
-						std::cout << "contains at: " << kiTarget_x << " sad " << kiTarget_y << std::endl;
 						spielerSchiffe.at(i) -> hitted();
 						if (spielerSchiffe.at(i) -> isVersenkt()) {
 							std::cout << "Dein Schiff wurde versenkt!" << std::endl;
