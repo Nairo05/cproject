@@ -11,11 +11,11 @@ In unserer Konfiguration gibt es: 1x 5er-Schiff, 1x 4er-Schiff, 3x 3er-Schiff, 1
 Spieler und KI schießen abwechselnd; bei einem Treffer ist derselbe Spieler solange dran, bis er daneben trifft. 
 
 Die Werte auf den Spielfeldern haben dabei folgende Bedeutungen:
-0: Wasser
-1: Schiff
-2: Getroffen
-3: Versenkt
-4: Daneben
+Systemcode: 0 | Bedeutung: Wasser     | Darstellung: ~
+Systemcode: 1 | Bedeutung: Schiff     | Darstellung: 1
+Systemcode: 2 | Bedeutung: Treffer    | Darstellung: X
+Systemcode: 3 | Bedeutung: Versenkt   | Darstellung: #
+Systemcode: 4 | Bedeutung: Daneben    | Darstellung: %
 
 Verloren hat der Spieler, welcher keine Schiffe mehr auf seinem Feld besitzt.
 
