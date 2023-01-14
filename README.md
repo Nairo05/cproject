@@ -10,12 +10,12 @@ Schiffe müssen auf einem 10x10-Feld platziert werden, ohne sich zu berühren od
 In unserer Konfiguration gibt es: 1x 5er-Schiff, 1x 4er-Schiff, 3x 3er-Schiff, 1x 2er-Schiff.
 Spieler und KI schießen abwechselnd; bei einem Treffer ist derselbe Spieler solange dran, bis er daneben trifft. 
 
-Die Werte auf den Spielfeldern haben dabei folgende Bedeutungen:
-Systemcode: 0 | Bedeutung: Wasser     | Darstellung: ~
-Systemcode: 1 | Bedeutung: Schiff     | Darstellung: 1
-Systemcode: 2 | Bedeutung: Treffer    | Darstellung: X
-Systemcode: 3 | Bedeutung: Versenkt   | Darstellung: #
-Systemcode: 4 | Bedeutung: Daneben    | Darstellung: %
+Die Werte auf den Spielfeldern haben dabei folgende Bedeutungen:  
+Systemcode: 0 | Bedeutung: Wasser     | Darstellung: ~  
+Systemcode: 1 | Bedeutung: Schiff     | Darstellung: 1  
+Systemcode: 2 | Bedeutung: Treffer    | Darstellung: X  
+Systemcode: 3 | Bedeutung: Versenkt   | Darstellung: #  
+Systemcode: 4 | Bedeutung: Daneben    | Darstellung: %  
 
 Verloren hat der Spieler, welcher keine Schiffe mehr auf seinem Feld besitzt.
 
@@ -53,6 +53,6 @@ Nach jedem Zug erfolgt die Win-Detection, die dann die while-Schleife in der Met
 In der main()-Methode wird dann letztendlich der Gewinner ausgegeben und Heap-Speicher freigegeben.
 
 ##Schwierigkeiten
-- Out of Playfield:
-- Random Algorithmus: 
+- Out-of-Playfield und Koordinaten-Rechnungen: Das berechnen einzelner Schiffsfelder und Koordinaten hat viel Potenzial für Logik- und Indexfehler geboten, welches wir   voll ausgeschöpft haben xD 
+- Random Algorithmus: Aufgrund eines Fehlers hatte der Random-Algorithmus ständig dieselben Zufallssequenzen generiert, zudem immer Koordinaten der Form 11, 22, 33 usw. beschossen. Außerdem hat dieser Fehler bewirkt, dass das zufällige Setzen des KI-Spielfeldes ca. 20 Sekunden benötigt hatte.
 
